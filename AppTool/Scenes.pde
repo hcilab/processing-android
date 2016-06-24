@@ -1,5 +1,5 @@
 //======================================================================================================
-// Author: David Hanna
+// Author: David Hanna (Sprite section edited by Alex Kienzle)
 //
 // An module responsible for rendering a collection of objects to the screen.
 //======================================================================================================
@@ -449,6 +449,8 @@ public class Sprite implements ISprite
 {
   private String name;
   
+  private PShape square = createShape(RECT, 0, 0, 1, 1);;
+  
   private PVector translation;
   private float rotation;
   private PVector scale;
@@ -458,10 +460,11 @@ public class Sprite implements ISprite
   private boolean selected; 
   private String icon;
   private color iconColor;
+  private boolean inGrid;
   
   public Sprite(String _name)
   {
-    name = _name;         
+    name = _name;  //<>// //<>// //<>//
     
     translation = new PVector();
     rotation = 0.0f;
@@ -472,6 +475,9 @@ public class Sprite implements ISprite
     selected = false;
     icon = "";
     iconColor = color(255, 255, 255);
+    square.setStroke(color(0));
+    square.setStrokeWeight(0.002);
+    inGrid = false;
   }
   
   public Sprite(JSONObject jsonSprite)
@@ -482,6 +488,11 @@ public class Sprite implements ISprite
   public String getName()
   {
     return name;
+  }
+  
+  public PShape getSquare()
+  {
+    return square;
   }
   
   public PVector getTranslation()
@@ -524,6 +535,11 @@ public class Sprite implements ISprite
     return iconColor;
   }
   
+  public boolean getInGrid()
+  {
+    return inGrid;
+  }
+  
   public void setTranslation(PVector _translation)
   {
     translation = _translation;
@@ -542,6 +558,7 @@ public class Sprite implements ISprite
   public void setSize(float _size)
   {
     size = _size;
+    square.scale(size);
   }
   
   public void setBGColor(color _bgColor)
@@ -563,17 +580,22 @@ public class Sprite implements ISprite
     iconColor = _iconColor;
   }
   
+  public void setInGrid(boolean _inGrid)
+  {
+    inGrid = _inGrid;
+  }
+  
   public void render()
   {
     pushMatrix();
     translate(translation.x, translation.y, translation.z);
     rotateZ(rotation);
     scale(scale.x, scale.y, scale.z);
-    fill(bgColor);
+    square.setFill(bgColor);
     if(selected){
-      fill(0);
+      square.setFill(color(0));
     }
-    rect(0.0, 0.0, size, size, 10);
+    shape(square, 0, 0);
     float s = size*0.75;
     textSize((float)Math.ceil(s));
     String str = "\\u"+ icon;
